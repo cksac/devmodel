@@ -1,5 +1,4 @@
-use crate::mysql::types::Type;
-use devmodel_core::{Extension, Field};
+use crate::mysql::types::Type::{self, *};
 
 #[derive(Debug)]
 pub struct Column {
@@ -10,23 +9,20 @@ impl Column {
     pub fn ty(ty: Type) -> Column {
         Column { ty }
     }
-}
 
-// Note: extend Field<E>
-// pub trait ColumnExtension<FE> {
-//     fn mysql_column<F>(self, col: Column) -> Field<FE>;
-// }
+    pub fn int(size: usize) -> Column {
+        Column::ty(INT(size))
+    }
 
-// impl<FE> ColumnExtension<FE> for Field<FE>
-// where
-//     FE: Extension<Column>,
-// {
-//     fn mysql_column<F>(mut self, col: Column) -> Field<FE> {
-//         self.extensions.set(col);
-//         self
-//     }
-// }
+    pub fn tinyint(size: usize) -> Column {
+        Column::ty(TINYINT(size))
+    }
 
-pub fn int(size: usize) -> Column {
-    Column::ty(Type::INT(size))
+    pub fn varchar(size: usize) -> Column {
+        Column::ty(VARCHAR(size))
+    }
+
+    pub fn timestamp(fsp: usize) -> Column {
+        Column::ty(TIMESTAMP(fsp))
+    }
 }

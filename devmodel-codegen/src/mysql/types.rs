@@ -26,8 +26,8 @@ pub enum Type {
     DOUBLE(usize, usize),
     DECIMAL(usize, usize),
     DATE,
-    DATETIME,
-    TIMESTAMP,
+    DATETIME(usize),
+    TIMESTAMP(usize),
     TIME,
     YEAR,
 }

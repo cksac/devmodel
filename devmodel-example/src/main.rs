@@ -1,14 +1,8 @@
 use devmodel_codegen::mysql;
 use devmodel_core::types::*;
 use devmodel_core::*;
-use serde::Serialize;
 
 use std::fmt::Debug;
-
-// #[derive(Debug, Default)]
-// pub struct FieldExt {
-//     pub mysql_col: Option<mysql::Column>,
-// }
 
 // define_ext! will generate following extension struct
 // #[derive(Debug, Default)]
@@ -23,90 +17,70 @@ use std::fmt::Debug;
 //         self.mysql_col = Some(ext);
 //     }
 // }
-
 define_ext! {
     FieldExt {
         mysql_col: mysql::Column
     }
 }
 
-pub struct Describe;
-impl<DE, ME, FE, EE> Generator<DE, ME, FE, EE> for Describe {
-    type Output = ();
-    type Error = ();
-    fn generate(&mut self, domain: &Domain<DE, ME, FE, EE>) -> Result<Self::Output, Self::Error> {
-        for (_, model) in domain.models.iter() {
-            println!("Model {}", model.name);
-            for field in model.fields.iter() {
-                println!("\t- {}, optional: {}", field.name, field.optional);
-            }
-        }
-        Ok(())
-    }
+pub trait ModelHelper {
+    fn time_fields(self) -> Self;
 }
 
-// Trait to extend the Model, can use to modify extensions as well
-// Use trait to extend Model modification function of fields/edges/extensions?
-pub trait TimeFields<C: Default> {
-    fn time_fields_with_config(self, config: C) -> Self;
-    fn time_fields(self) -> Self
-    where
-        Self: Sized,
-    {
-        self.time_fields_with_config(Default::default())
-    }
-}
-
-#[derive(Serialize, Debug)]
-pub struct TimeFieldsConfig {
-    created_at: String,
-    created_by: String,
-}
-impl Default for TimeFieldsConfig {
-    fn default() -> Self {
-        TimeFieldsConfig {
-            created_at: "create_at".to_string(),
-            created_by: "create_by".to_string(),
-        }
-    }
-}
-
-impl<ME, FE, EE> TimeFields<TimeFieldsConfig> for Model<ME, FE, EE>
+impl<ME, FE, EE> ModelHelper for Model<ME, FE, EE>
 where
     ME: Default,
-    FE: Default,
+    FE: Default + Extension<mysql::Column>,
     EE: Default,
 {
-    fn time_fields_with_config(self, config: TimeFieldsConfig) -> Self {
-        self.field(config.created_at, |f| f)
-            .field(config.created_by, |f| f)
+    fn time_fields(self) -> Self {
+        self.field("created_at", |f| {
+            f.ty(Usize::new()).extension(mysql::Column::timestamp(6))
+        })
+        .field("updated_at", |f| {
+            f.ty(Usize::new()).extension(mysql::Column::timestamp(6))
+        })
     }
 }
 
 fn main() {
-    let domain = Domain::<(), (), FieldExt, ()>::new("Test")
+    let domain = Domain::<(), (), FieldExt, ()>::new("School")
         .model(
-            Model::new("Alert")
-                .field("alert_id", |f| f.ty(Isize::default(10)))
-                .field("latest_detection_id", |f| {
-                    f.ty(Isize::new())
-                        .extension(mysql::column::int(20))
-                        .extension(mysql::column::int(10))
+            Model::new("Teacher")
+                .field("tid", |f| {
+                    f.ty(Usize::new()).extension(mysql::Column::int(20))
+                })
+                .field("name", |f| {
+                    f.ty(Str::new()).extension(mysql::Column::varchar(256))
                 })
                 .time_fields(),
         )
         .model(
-            Model::new("Detection")
-                .field("detection_id", |f| f)
-                .field("alert_id", |f| f)
-                .field("extra_info_id", |f| f.optional())
-                .time_fields_with_config(TimeFieldsConfig {
-                    created_at: "create_gmt".to_string(),
-                    created_by: "create_user".to_string(),
-                }),
+            Model::new("Course")
+                .field("cid", |f| {
+                    f.ty(Usize::new()).extension(mysql::Column::int(20))
+                })
+                .field("title", |f| {
+                    f.ty(Str::new()).extension(mysql::Column::varchar(256))
+                })
+                .field("is_remote", |f| {
+                    f.ty(Bool::new()).extension(mysql::Column::tinyint(1))
+                })
+                .time_fields(),
+        )
+        .model(
+            Model::new("Student")
+                .field("sid", |f| {
+                    f.ty(Usize::new()).extension(mysql::Column::int(20))
+                })
+                .field("name", |f| {
+                    f.ty(Str::new()).extension(mysql::Column::varchar(256))
+                })
+                .field("year", |f| {
+                    f.ty(U8::new()).extension(mysql::Column::tinyint(1))
+                })
+                .time_fields(),
         );
-
-    let _ = Describe.generate(&domain);
 
     let _ = mysql::Schema.generate(&domain);
 }
