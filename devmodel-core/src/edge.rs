@@ -1,18 +1,11 @@
-use serde::Serialize;
-
-use std::fmt::Debug;
-#[derive(Serialize, Debug)]
-pub struct Edge<EE>
-where
-    EE: Debug + Serialize + Default,
-{
+pub struct Edge<EE> {
     pub name: String,
     pub extensions: EE,
 }
 
 impl<EE> Edge<EE>
 where
-    EE: Debug + Serialize + Default,
+    EE: Default,
 {
     pub fn new(name: impl Into<String>) -> Edge<EE> {
         Edge {

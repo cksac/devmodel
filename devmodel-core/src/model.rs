@@ -1,14 +1,6 @@
 use crate::{Edge, Field};
-use serde::Serialize;
 
-use std::fmt::Debug;
-#[derive(Serialize, Debug)]
-pub struct Model<ME, FE, EE>
-where
-    ME: Debug + Serialize + Default,
-    FE: Debug + Serialize + Default,
-    EE: Debug + Serialize + Default,
-{
+pub struct Model<ME, FE, EE> {
     pub name: String,
     pub fields: Vec<Field<FE>>,
     pub edges: Vec<Edge<EE>>,
@@ -17,9 +9,9 @@ where
 
 impl<ME, FE, EE> Model<ME, FE, EE>
 where
-    ME: Debug + Serialize + Default,
-    FE: Debug + Serialize + Default,
-    EE: Debug + Serialize + Default,
+    ME: Default,
+    FE: Default,
+    EE: Default,
 {
     pub fn new(name: impl Into<String>) -> Model<ME, FE, EE> {
         Model {

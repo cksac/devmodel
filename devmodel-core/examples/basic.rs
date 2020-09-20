@@ -1,3 +1,4 @@
+use devmodel_core::types::*;
 use devmodel_core::*;
 use serde::Serialize;
 
@@ -66,8 +67,8 @@ fn main() {
     let domain = Domain::<(), (), (), ()>::new("Test")
         .model(
             Model::new("Alert")
-                .field("alert_id", |f| f)
-                .field("latest_detection_id", |f| f)
+                .field("alert_id", |f| f.ty(Isize::default(10)))
+                .field("latest_detection_id", |f| f.ty(Isize::new()))
                 .time_fields(),
         )
         .model(
