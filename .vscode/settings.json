@@ -1,8 +1,10 @@
 {
     "cSpell.words": [
         "VARBINARY",
+        "codegen",
         "core",
         "devmodel",
+        "devmodel codegen",
         "devmodel core",
         "longblob",
         "longtext",

@@ -12,15 +12,17 @@ macro_rules! define_num {
     ($name:ident, $ty:ty) => {
         #[derive(Debug)]
         pub struct $name {
-            pub default: Option<$ty>,
+            pub default_val: Option<$ty>,
         }
         impl $name {
             pub fn new() -> $name {
-                $name { default: None }
+                $name { default_val: None }
             }
 
             pub fn default(val: $ty) -> $name {
-                $name { default: Some(val) }
+                $name {
+                    default_val: Some(val),
+                }
             }
         }
 

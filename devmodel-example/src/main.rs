@@ -1,20 +1,32 @@
-use devmodel_codegen::mysql::{self, MySqlFieldExtension};
+use devmodel_codegen::mysql;
 use devmodel_core::types::*;
 use devmodel_core::*;
 use serde::Serialize;
 
 use std::fmt::Debug;
 
-#[derive(Debug, Default)]
-pub struct FieldExt {
-    sql: Option<mysql::FieldExt>,
-}
-impl Extension<mysql::FieldExt> for FieldExt {
-    fn get(&self) -> Option<&mysql::FieldExt> {
-        self.sql.as_ref()
-    }
-    fn set(&mut self, ext: mysql::FieldExt) {
-        self.sql = Some(ext);
+// #[derive(Debug, Default)]
+// pub struct FieldExt {
+//     pub mysql_col: Option<mysql::Column>,
+// }
+
+// define_ext! will generate following extension struct
+// #[derive(Debug, Default)]
+// pub struct FieldExt {
+//     pub mysql_col: Option<mysql::Column>,
+// }
+// impl Extension<mysql::Column> for FieldExt {
+//     fn get(&self) -> Option<&mysql::Column> {
+//         self.mysql_col.as_ref()
+//     }
+//     fn set(&mut self, ext: mysql::Column) {
+//         self.mysql_col = Some(ext);
+//     }
+// }
+
+define_ext! {
+    FieldExt {
+        mysql_col: mysql::Column
     }
 }
 
@@ -75,8 +87,12 @@ fn main() {
     let domain = Domain::<(), (), FieldExt, ()>::new("Test")
         .model(
             Model::new("Alert")
-                .field("alert_id", |f| f.ty(Isize::default(10)).mysql_int(10))
-                .field("latest_detection_id", |f| f.ty(Isize::new()).mysql_int(20))
+                .field("alert_id", |f| f.ty(Isize::default(10)))
+                .field("latest_detection_id", |f| {
+                    f.ty(Isize::new())
+                        .extension(mysql::column::int(20))
+                        .extension(mysql::column::int(10))
+                })
                 .time_fields(),
         )
         .model(
