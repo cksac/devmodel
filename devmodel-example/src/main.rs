@@ -1,17 +1,25 @@
+use devmodel_codegen::mysql::{self, MySqlFieldExtension};
 use devmodel_core::types::*;
 use devmodel_core::*;
 use serde::Serialize;
 
 use std::fmt::Debug;
 
+#[derive(Debug, Default)]
+pub struct FieldExt {
+    sql: Option<mysql::FieldExt>,
+}
+impl Extension<mysql::FieldExt> for FieldExt {
+    fn get(&self) -> Option<&mysql::FieldExt> {
+        self.sql.as_ref()
+    }
+    fn set(&mut self, ext: mysql::FieldExt) {
+        self.sql = Some(ext);
+    }
+}
+
 pub struct Describe;
-impl<DE, ME, FE, EE> Generator<DE, ME, FE, EE> for Describe
-where
-    DE: Debug + Serialize + Default,
-    ME: Debug + Serialize + Default,
-    FE: Debug + Serialize + Default,
-    EE: Debug + Serialize + Default,
-{
+impl<DE, ME, FE, EE> Generator<DE, ME, FE, EE> for Describe {
     type Output = ();
     type Error = ();
     fn generate(&mut self, domain: &Domain<DE, ME, FE, EE>) -> Result<Self::Output, Self::Error> {
@@ -53,9 +61,9 @@ impl Default for TimeFieldsConfig {
 
 impl<ME, FE, EE> TimeFields<TimeFieldsConfig> for Model<ME, FE, EE>
 where
-    ME: Debug + Serialize + Default,
-    FE: Debug + Serialize + Default,
-    EE: Debug + Serialize + Default,
+    ME: Default,
+    FE: Default,
+    EE: Default,
 {
     fn time_fields_with_config(self, config: TimeFieldsConfig) -> Self {
         self.field(config.created_at, |f| f)
@@ -64,11 +72,11 @@ where
 }
 
 fn main() {
-    let domain = Domain::<(), (), (), ()>::new("Test")
+    let domain = Domain::<(), (), FieldExt, ()>::new("Test")
         .model(
             Model::new("Alert")
-                .field("alert_id", |f| f.ty(Isize::default(10)))
-                .field("latest_detection_id", |f| f.ty(Isize::new()))
+                .field("alert_id", |f| f.ty(Isize::default(10)).mysql_int(10))
+                .field("latest_detection_id", |f| f.ty(Isize::new()).mysql_int(20))
                 .time_fields(),
         )
         .model(
@@ -83,4 +91,6 @@ fn main() {
         );
 
     let _ = Describe.generate(&domain);
+
+    let _ = mysql::Schema.generate(&domain);
 }

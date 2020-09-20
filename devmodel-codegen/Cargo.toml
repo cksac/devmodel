@@ -1,0 +1,17 @@
+[package]
+name = "devmodel-codegen"
+version = "0.1.0"
+authors = ["cksac <cs.cksac@gmail.com>"]
+edition = "2018"
+description = "Rust model driven development"
+keywords = ["model driven development", "MDD"]
+categories = ["Build Utils"]
+license = "MIT/Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/cksac/devmodel"
+homepage = "https://github.com/cksac/devmodel"
+documentation = "https://docs.rs/devmodel"
+
+
+[dependencies]
+devmodel-core = { path = "../devmodel-core" }

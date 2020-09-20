@@ -1,7 +1,18 @@
 {
     "cSpell.words": [
+        "VARBINARY",
         "core",
         "devmodel",
-        "devmodel core"
+        "devmodel core",
+        "longblob",
+        "longtext",
+        "mediumblob",
+        "mediumint",
+        "mediumtext",
+        "smallint",
+        "tinyblob",
+        "tinyint",
+        "tinyt",
+        "tinytext"
     ]
 }

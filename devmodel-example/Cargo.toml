@@ -1,0 +1,12 @@
+[package]
+name = "devmodel-example"
+version = "0.1.0"
+authors = ["cksac <cs.cksac@gmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+devmodel-core = { path = "../devmodel-core" }
+devmodel-codegen = { path = "../devmodel-codegen" }
+serde = { version = "1.0", features = ["derive"] }

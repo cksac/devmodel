@@ -2,4 +2,6 @@
 
 members = [
     "devmodel-core",
+    "devmodel-codegen",
+    "devmodel-example"
 ]

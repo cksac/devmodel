@@ -1,3 +1,4 @@
+use crate::extension::Extension;
 use crate::types::{self, Type};
 
 pub struct Field<FE> {
@@ -27,6 +28,14 @@ where
 
     pub fn ty(mut self, ty: impl Type + 'static) -> Self {
         self.ty = Box::new(ty);
+        self
+    }
+
+    pub fn extension<E>(mut self, ext: E) -> Self
+    where
+        FE: Extension<E>,
+    {
+        self.extensions.set(ext);
         self
     }
 }
